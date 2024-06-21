@@ -25,12 +25,29 @@ import PaymentForm from './payment-form/PaymentForm';
 import StripePaymentForm from './payment-form/StripePaymentForm';
 import FreeCheckoutOrderButton from './FreeCheckoutOrderButton';
 import { PayPalButton } from '../payment-methods/paypal';
+import { WechatPayButton, WechatPayCode } from '../payment-methods/wechatpay';
 import { ORDER_TYPES } from '../data/constants';
 
 class Checkout extends React.Component {
   componentDidMount() {
     this.props.fetchClientSecret();
   }
+
+  handleSubmitWechatPay = () => {
+    sendTrackEvent(
+      'edx.bi.ecommerce.basket.payment_selected',
+      {
+        type: 'click',
+        category: 'checkout',
+        paymentMethod: 'wechatpay',
+        stripeEnabled: this.props.enableStripePaymentProcessor,
+      },
+    );
+
+    this.props.submitPayment({
+      method: 'wechatpay',
+    });
+  };
 
   handleSubmitPayPal = () => {
     // TO DO: after event parity, track data should be
@@ -157,6 +174,8 @@ class Checkout extends React.Component {
       paymentMethod,
       submitting,
       orderType,
+      wechatPayQrcodeUrl,
+      wechatPayTradeState,
     } = this.props;
     const submissionDisabled = loading || isBasketProcessing;
     const isBulkOrder = orderType === ORDER_TYPES.BULK_ENROLLMENT;
@@ -208,6 +227,8 @@ class Checkout extends React.Component {
     // istanbul ignore next
     const stripeIsSubmitting = submitting && paymentMethod === 'stripe';
 
+    const wechatpayIsSubmitting = submitting && paymentMethod === 'wechatpay';
+
     if (isFreeBasket) {
       return (
         <FreeCheckoutOrderButton
@@ -245,7 +266,7 @@ class Checkout extends React.Component {
           </h5>
 
           <p className="d-flex flex-wrap">
-            <button type="button" className="payment-method-button active">
+            <button type="button" disabled={payPalIsSubmitting || wechatpayIsSubmitting} className={classNames('payment-method-button', { active: !payPalIsSubmitting && !wechatpayIsSubmitting })}>
               <img
                 src={AcceptedCardLogos}
                 alt={intl.formatMessage(messages['payment.page.method.type.credit'])}
@@ -254,9 +275,16 @@ class Checkout extends React.Component {
 
             <PayPalButton
               onClick={this.handleSubmitPayPal}
-              className={classNames('payment-method-button', { 'skeleton-pulse': loading })}
+              className={classNames('payment-method-button', { 'skeleton-pulse': loading }, { active: payPalIsSubmitting })}
               disabled={submissionDisabled}
               isProcessing={payPalIsSubmitting}
+            />
+
+            <WechatPayButton
+              onClick={this.handleSubmitWechatPay}
+              className={classNames('payment-method-button', { 'skeleton-pulse': loading }, { active: wechatpayIsSubmitting })}
+              disabled={wechatpayIsSubmitting}
+              isProcessing={wechatpayIsSubmitting}
             />
 
             {/* Apple Pay temporarily disabled per REV-927  - https://github.com/openedx/frontend-app-payment/pull/256 */}
@@ -281,7 +309,7 @@ class Checkout extends React.Component {
           </Elements>
         ) : (loading && (this.renderBillingFormSkeleton()))}
 
-        {shouldDisplayCyberSourcePaymentForm && (
+        {shouldDisplayCyberSourcePaymentForm && !wechatpayIsSubmitting && (
         <PaymentForm
           onSubmitPayment={this.handleSubmitCybersource}
           onSubmitButtonClick={this.handleSubmitCybersourceButtonClick}
@@ -292,6 +320,10 @@ class Checkout extends React.Component {
           isBulkOrder={isBulkOrder}
           isQuantityUpdating={isQuantityUpdating}
         />
+        )}
+
+        {wechatpayIsSubmitting && (
+          <WechatPayCode value={wechatPayQrcodeUrl} tradeState={wechatPayTradeState} />
         )}
       </>
     );
@@ -319,10 +351,12 @@ Checkout.propTypes = {
   isFreeBasket: PropTypes.bool,
   submitting: PropTypes.bool,
   isBasketProcessing: PropTypes.bool,
-  paymentMethod: PropTypes.oneOf(['paypal', 'apple-pay', 'cybersource', 'stripe']),
+  paymentMethod: PropTypes.oneOf(['paypal', 'apple-pay', 'cybersource', 'stripe', 'wechatpay']),
   orderType: PropTypes.oneOf(Object.values(ORDER_TYPES)),
   enableStripePaymentProcessor: PropTypes.bool,
   clientSecretId: PropTypes.string,
+  wechatPayQrcodeUrl: PropTypes.string,
+  wechatPayTradeState: PropTypes.string,
 };
 
 Checkout.defaultProps = {
@@ -335,6 +369,8 @@ Checkout.defaultProps = {
   orderType: ORDER_TYPES.SEAT,
   enableStripePaymentProcessor: false,
   clientSecretId: null,
+  wechatPayQrcodeUrl: null,
+  wechatPayTradeState: null,
 };
 
 const mapStateToProps = (state) => ({

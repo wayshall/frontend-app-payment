@@ -1,6 +1,9 @@
 import { combineReducers } from 'redux';
 
 import {
+  // PULL_WECHAT_PAY_RESULT,
+  WECHAT_PAY_QRCODE_GENERATED,
+  WECHAT_PAY_STATE,
   BASKET_DATA_RECEIVED,
   BASKET_PROCESSING,
   CAPTURE_KEY_DATA_RECEIVED,
@@ -23,6 +26,8 @@ const basketInitialState = {
   redirect: false,
   isBasketProcessing: false,
   products: [],
+  wechatPayQrcodeUrl: null,
+  wechatPayTradeState: null,
 };
 
 const basket = (state = basketInitialState, action = null) => {
@@ -42,6 +47,18 @@ const basket = (state = basketInitialState, action = null) => {
         isBasketProcessing: action.payload,
       };
 
+      case WECHAT_PAY_QRCODE_GENERATED: return {
+        ...state,
+        wechatPayQrcodeUrl: action.payload.payment_page_url,
+
+      };
+
+      case WECHAT_PAY_STATE: return {
+        ...state,
+        wechatPayTradeState: action.payload.trade_state,
+
+      };
+
       case submitPayment.TRIGGER: return {
         ...state,
         paymentMethod: action.payload.method,
@@ -56,8 +73,8 @@ const basket = (state = basketInitialState, action = null) => {
       };
       case submitPayment.FULFILL: return {
         ...state,
-        submitting: false,
-        paymentMethod: undefined,
+        submitting: true,
+        // paymentMethod: undefined,
       };
 
       default:

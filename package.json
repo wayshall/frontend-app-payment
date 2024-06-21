@@ -16,7 +16,7 @@
     "lint": "fedx-scripts eslint . --ext .js,.jsx",
     "prepare": "husky install",
     "snapshot": "fedx-scripts jest --updateSnapshot",
-    "start": "fedx-scripts webpack-dev-server --progress",
+    "start": "fedx-scripts webpack-dev-server --config=webpack.dev.config.js --progress",
     "start:stage": "fedx-scripts webpack-dev-server --config=webpack.dev-stage.config.js --progress",
     "test": "fedx-scripts jest --coverage"
   },
@@ -52,6 +52,7 @@
     "lodash.without": "^4.4.0",
     "moment-timezone": "^0.5.43",
     "prop-types": "^15.8.1",
+    "qrcode.react": "^3.1.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.8",

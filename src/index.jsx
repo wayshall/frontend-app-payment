@@ -43,6 +43,17 @@ import './index.scss';
 const tempHttpClient = axios.create();
 tempHttpClient.defaults.withCredentials = true;
 
+// 添加请求拦截器
+// tempHttpClient.interceptors.request.use((config) => {
+//   // 在发送请求之前做些什么
+//   console.log('---> Axios Request:', config);
+//   return config;
+// }, (error) => {
+//   // 对请求错误做些什么
+//   console.error(error)
+//   return Promise.reject(error);
+// });
+
 const allQueryParams = getQueryParameters(global.location.search);
 const waffleFlags = {};
 const WAFFLE_PREFIX = 'dwft_';
@@ -88,7 +99,7 @@ subscribe(APP_READY, () => {
       <Header />
       <main id="main">
         <Routes>
-          <Route path="/" element={<PaymentPage />} />
+          <Route path="/payment/" element={<PaymentPage />} />
           {
             getConfig().ENABLE_B2C_SUBSCRIPTIONS?.toLowerCase() === 'true' ? (
               <>

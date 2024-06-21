@@ -131,5 +131,6 @@
   "subscription.summary.table.label.resubscribe.price": "/month USD",
   "subscription.summary.table.label.total.to.pay": "Today's total",
   "subscription.heading.page": "Subscription Payment",
-  "subscription.loading.details": "Loading subscription..."
+  "subscription.loading.details": "Loading subscription...",
+  "payment.type.wechatpay": "WechatPay"
 }

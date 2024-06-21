@@ -21,8 +21,25 @@ export const removeCoupon = createRoutine('REMOVE_COUPON');
 export const updateQuantity = createRoutine('UPDATE_QUANTITY');
 
 // Actions and their action creators
-export const BASKET_DATA_RECEIVED = 'BASKET_DATA_RECEIVED';
 
+// export const PULL_WECHAT_PAY_RESULT = 'PULL_WECHAT_PAY_RESULT';
+// export const pullWechatPayResult = () => ({
+//   type: PULL_WECHAT_PAY_RESULT,
+// });
+
+export const WECHAT_PAY_QRCODE_GENERATED = 'WECHAT_PAY_QRCODE_GENERATED';
+export const wechatPayQrcodeGenerated = data => ({
+  type: WECHAT_PAY_QRCODE_GENERATED,
+  payload: data,
+});
+
+export const WECHAT_PAY_STATE = 'WECHAT_PAY_STATE';
+export const wechatPayState = data => ({
+  type: WECHAT_PAY_STATE,
+  payload: data,
+});
+
+export const BASKET_DATA_RECEIVED = 'BASKET_DATA_RECEIVED';
 export const basketDataReceived = basket => ({
   type: BASKET_DATA_RECEIVED,
   payload: basket,

@@ -31,7 +31,7 @@ export function* handleErrors(e, clearExistingMessages) {
   if (e.messages !== undefined) {
     for (let i = 0; i < e.messages.length; i++) { // eslint-disable-line no-plusplus
       const message = e.messages[i];
-      yield put(addMessage(message.code, message.userMessage, message.data, message.messageType));
+      yield put(addMessage(message.code, message.userMessage || message.message, message.data, message.messageType));
     }
   }
 }

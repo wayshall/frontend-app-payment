@@ -7,6 +7,7 @@ import { MESSAGE_TYPES } from '../../feedback/data/constants';
 
 // Actions
 import {
+  wechatPayQrcodeGenerated,
   basketDataReceived,
   basketProcessing,
   captureKeyDataReceived,
@@ -36,12 +37,14 @@ import { checkoutWithToken } from '../payment-methods/cybersource';
 import { checkout as checkoutPaypal } from '../payment-methods/paypal';
 import { checkout as checkoutApplePay } from '../payment-methods/apple-pay';
 import { checkout as checkoutStripe } from '../payment-methods/stripe';
+import { checkout as checkoutWechatpay, queryPayment } from '../payment-methods/wechatpay';
 
 export const paymentMethods = {
   cybersource: checkoutWithToken,
   paypal: checkoutPaypal,
   'apple-pay': checkoutApplePay,
   stripe: checkoutStripe,
+  wechatpay: checkoutWechatpay,
 };
 
 function* isBasketProcessing() {
@@ -226,14 +229,21 @@ export function* handleSubmitPayment({ payload }) {
     return;
   }
 
-  const { method, ...paymentArgs } = payload;
+  // const { method, ...paymentArgs } = payload;
+  const { method } = payload;
   try {
     yield put(basketProcessing(true));
     yield put(clearMessages()); // Don't leave messages floating on the page after clicking submit
     yield put(submitPayment.request());
     const paymentMethodCheckout = paymentMethods[method];
     const basket = yield select(state => ({ ...state.payment.basket }));
-    yield call(paymentMethodCheckout, basket, paymentArgs);
+    const result = yield call(paymentMethodCheckout, basket);
+    if (method === 'wechatpay' && result) {
+      // console.log('payment result:', result);
+      yield put(wechatPayQrcodeGenerated(result));
+      // yield put(pullWechatPayResult());
+      yield call(queryPayment, basket, result);
+    }
     yield put(submitPayment.success());
   } catch (error) {
     // Do not handle errors on user aborted actions
