@@ -46,7 +46,7 @@ export function* queryPayment(basket, checkoutResult) {
     // console.log('query payment paymentStatus: ', paymentStatus);
 
     // 根据支付状态决定是否继续轮询
-    if (paymentStatus.trade_state === 'SUCCESS') {
+    if (paymentStatus && paymentStatus.trade_state === 'SUCCESS') {
       // 支付成功，结束轮询
       // console.log('query payment success, redirect: ', paymentStatus.redirect_url);
       window.location.href = paymentStatus.redirect_url;
