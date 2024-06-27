@@ -99,7 +99,7 @@ subscribe(APP_READY, () => {
       <Header />
       <main id="main">
         <Routes>
-          <Route path="/payment/" element={<PaymentPage />} />
+          <Route path="/" element={<PaymentPage />} />
           {
             getConfig().ENABLE_B2C_SUBSCRIPTIONS?.toLowerCase() === 'true' ? (
               <>
