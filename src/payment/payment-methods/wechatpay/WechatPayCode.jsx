@@ -17,7 +17,8 @@ const WechatPayCode = ({ value, tradeState }) => {
     if (tradeState === 'NOTPAY') {
       return (
         <div>
-          <div>请扫描下面的二维码进行支付……</div>
+          <div>请扫描下面的二维码进行支付</div>
+          <div>支付成功后请勿关闭和刷新页面，等待支付完成即可……</div>
           <div>
             <QRCode
               value={value}// 生成二维码的内容
