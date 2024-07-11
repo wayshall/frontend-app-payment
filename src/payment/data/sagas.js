@@ -38,6 +38,7 @@ import { checkout as checkoutPaypal } from '../payment-methods/paypal';
 import { checkout as checkoutApplePay } from '../payment-methods/apple-pay';
 import { checkout as checkoutStripe } from '../payment-methods/stripe';
 import { checkout as checkoutWechatpay, queryPayment } from '../payment-methods/wechatpay';
+import { checkout as checkoutAlipay } from '../payment-methods/alipay';
 
 export const paymentMethods = {
   cybersource: checkoutWithToken,
@@ -45,6 +46,7 @@ export const paymentMethods = {
   'apple-pay': checkoutApplePay,
   stripe: checkoutStripe,
   wechatpay: checkoutWechatpay,
+  alipay: checkoutAlipay,
 };
 
 function* isBasketProcessing() {

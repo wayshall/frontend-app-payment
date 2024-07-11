@@ -28,6 +28,8 @@ import { PayPalButton } from '../payment-methods/paypal';
 import { WechatPayButton, WechatPayCode } from '../payment-methods/wechatpay';
 import { ORDER_TYPES } from '../data/constants';
 
+import { AliPayButton } from '../payment-methods/alipay';
+
 class Checkout extends React.Component {
   componentDidMount() {
     this.props.fetchClientSecret();
@@ -47,6 +49,20 @@ class Checkout extends React.Component {
     this.props.submitPayment({
       method: 'wechatpay',
     });
+  };
+
+  handleSubmitAliPay = () => {
+    sendTrackEvent(
+      'edx.bi.ecommerce.basket.payment_selected',
+      {
+        type: 'click',
+        category: 'checkout',
+        paymentMethod: 'alipay',
+        stripeEnabled: this.props.enableStripePaymentProcessor,
+      },
+    );
+
+    this.props.submitPayment({ method: 'alipay' });
   };
 
   handleSubmitPayPal = () => {
@@ -229,6 +245,8 @@ class Checkout extends React.Component {
 
     const wechatpayIsSubmitting = submitting && paymentMethod === 'wechatpay';
 
+    const alipayIsSubmitting = submitting && paymentMethod === 'alipay';
+
     if (isFreeBasket) {
       return (
         <FreeCheckoutOrderButton
@@ -285,6 +303,13 @@ class Checkout extends React.Component {
               className={classNames('payment-method-button', { 'skeleton-pulse': loading }, { active: wechatpayIsSubmitting })}
               disabled={wechatpayIsSubmitting}
               isProcessing={wechatpayIsSubmitting}
+            />
+
+            <AliPayButton
+              onClick={this.handleSubmitAliPay}
+              className={classNames('payment-method-button', { 'skeleton-pulse': loading }, { active: alipayIsSubmitting })}
+              disabled={submissionDisabled}
+              isProcessing={alipayIsSubmitting}
             />
 
             {/* Apple Pay temporarily disabled per REV-927  - https://github.com/openedx/frontend-app-payment/pull/256 */}
@@ -351,7 +376,7 @@ Checkout.propTypes = {
   isFreeBasket: PropTypes.bool,
   submitting: PropTypes.bool,
   isBasketProcessing: PropTypes.bool,
-  paymentMethod: PropTypes.oneOf(['paypal', 'apple-pay', 'cybersource', 'stripe', 'wechatpay']),
+  paymentMethod: PropTypes.oneOf(['paypal', 'apple-pay', 'cybersource', 'stripe', 'wechatpay', 'alipay']),
   orderType: PropTypes.oneOf(Object.values(ORDER_TYPES)),
   enableStripePaymentProcessor: PropTypes.bool,
   clientSecretId: PropTypes.string,
