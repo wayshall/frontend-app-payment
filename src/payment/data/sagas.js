@@ -231,15 +231,17 @@ export function* handleSubmitPayment({ payload }) {
     return;
   }
 
-  // const { method, ...paymentArgs } = payload;
-  const { method } = payload;
+  const { method, ...paymentArgs } = payload;
+  // const { method } = payload;
   try {
     yield put(basketProcessing(true));
     yield put(clearMessages()); // Don't leave messages floating on the page after clicking submit
     yield put(submitPayment.request());
     const paymentMethodCheckout = paymentMethods[method];
+    console.log('handleSubmitPayment method: ', method);
+    console.log('handleSubmitPayment paymentArgs: ', paymentArgs);
     const basket = yield select(state => ({ ...state.payment.basket }));
-    const result = yield call(paymentMethodCheckout, basket);
+    const result = yield call(paymentMethodCheckout, basket, paymentArgs);
     if (method === 'wechatpay' && result) {
       // console.log('payment result:', result);
       yield put(wechatPayQrcodeGenerated(result));
@@ -248,6 +250,7 @@ export function* handleSubmitPayment({ payload }) {
     }
     yield put(submitPayment.success());
   } catch (error) {
+    console.error('handleSubmitPayment error: ', error);
     // Do not handle errors on user aborted actions
     if (!error.aborted) {
       // Client side generated errors are simple error objects.  If we have one, wrap it in the

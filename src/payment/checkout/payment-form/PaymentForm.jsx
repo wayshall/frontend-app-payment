@@ -43,6 +43,7 @@ export class PaymentFormComponent extends React.Component {
   }
 
   onSubmit = (values) => {
+    console.log('formValues: ', values);
     // istanbul ignore if
     if (this.props.disabled) { return; }
     this.setState({ shouldFocusFirstError: true });

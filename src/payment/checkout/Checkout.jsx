@@ -100,6 +100,18 @@ class Checkout extends React.Component {
     this.props.submitPayment({ method: 'apple-pay' });
   };
 
+  handleSubmitPaymentForm = (onSubmit) => {
+    const formSubmitCallback = (event) => {
+      event.preventDefault();
+      // console.log('handleSubmitPaymentForm', event);
+      const formData = new FormData(event.target);
+      const formValues = Object.fromEntries(formData);
+      onSubmit(formValues);
+      return false;
+    };
+    return formSubmitCallback;
+  };
+
   handleSubmitCybersource = (formData) => {
     this.props.submitPayment({ method: 'cybersource', ...formData });
   };
@@ -336,6 +348,7 @@ class Checkout extends React.Component {
 
         {shouldDisplayCyberSourcePaymentForm && !wechatpayIsSubmitting && (
         <PaymentForm
+          handleSubmit={this.handleSubmitPaymentForm}
           onSubmitPayment={this.handleSubmitCybersource}
           onSubmitButtonClick={this.handleSubmitCybersourceButtonClick}
           disabled={submitting}
